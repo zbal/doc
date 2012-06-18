@@ -1,0 +1,17 @@
+# deb http://192.168.1.160/debian squeeze main
+
+deb http://192.168.1.160/debian squeeze main
+# Line commented out by installer because it failed to verify:
+#deb-src http://192.168.1.160/debian squeeze main
+
+deb http://192.168.1.160/debian-security/ squeeze/updates main
+# Line commented out by installer because it failed to verify:
+#deb-src http://192.168.1.160/debian-security/ squeeze/updates main
+
+# squeeze-updates, previously known as 'volatile'
+deb http://192.168.1.160/debian squeeze-updates main
+# Line commented out by installer because it failed to verify:
+#deb-src http://192.168.1.160/debian squeeze-updates main
+
+# allow unstable - sid for updated packages
+deb http://debian.nctu.edu.tw/debian sid main
