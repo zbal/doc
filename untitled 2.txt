@@ -1,0 +1,18 @@
+- check adam conor 
+
+
+- review repo sync wikis
+
+
+- check Frank wiki
+- Matthew - get list from evan of servers having web issue (weekly meeting)
+- 475 - update wiki - notify carlos, include wiki link into ticket to junior
+- talk alan / Frank - %pre disk size check in ISO
+- Youssef / Matthew :
+    - tools to push log in DB ?
+    - SEC in prod ?
+    - is Syslog install using the new config ?:
+        - update install, auto isntalletl
+    - next steps ?
+    
+- php-fpm idle workers

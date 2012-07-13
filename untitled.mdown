@@ -1,0 +1,72 @@
+# CentOS6 DomU
+_Objective_; Replace the current CentOS 5.X distribution and move to the new CentOS 6
+_Advantages_; 
+
+- Newer version of packages
+- End of life schedule
+- Does not require any Xen compatible kernel, paravirt_ops are part of the default kernel
+
+_Drawbacks_;
+
+- Few
+
+_Steps_;
+
+- Perform base CentOS 6 setups:
+  - 1 DomU to test install softwares - can be crashed / reinstalled, will be used to test all newly installed service / RPM
+  - 1 DomU for 64 bit RPM build - need proper name and clean workflow
+  - 1 DomU for 32 bit RPM build (optional) - few 32 bit environment
+- Search for new sources of RPM or build new RPM for:
+  - zabbix agent / proxy (validate proper options, use latest stable),
+  - bacula-client
+  - common tools (lsof, iftop, dstat, etc.) - get exact list from CentOS 5 kickstart package list
+- Rebuild new CNC repo for CentOS 6:
+  - similar environment and update workflow as currently in place for CentOS 5
+  - re-add same packages as for CentOS 5 (MySQL, Nginx, Memcache, Varnish, etc.) - get exact list from CentOS 5 auto REPO update (from Alan), define priority for adding them in the auto REPO update (select the most commonly used services first)
+- Test all new softwares (in CNC CentOS 6 REPO) on test DomU (created at 1st step), ensure no dependencies are missing
+- Test zabbix custom monitoring RPM scripts and ensure all are working and agent is running well
+- Update CNC REPO auto update script and Zabbix custom monitoring RPM:
+  - daily generation of zabbix custom monitoring script should be sent to a regular web folder
+  - CNC REPO auto update script should check that page and import it in the CNC REPO as any other regular package
+  --> this will ensure we can keep in sync CentOS 5 and CentOS 6 repositories in a unified way
+- Update auto install script:
+  - fork / branch from existing script, or add conditional testing for proper environment
+  - test auto installation of softwares, fix and update script accordingly if needed
+  - update auto installation configuration script generation from Build Spreadsheet (Excel Macro):
+    - ensure the proper CentOS version is taken under account
+    - add new CentOS version in the spreadsheet if needed
+    - update spreadsheet template and store / give it back to PM for future setup usage
+- Create new Kickstart (netinstall, physical, virtual) - no DomO support
+  - No need for xen kernel
+  - LVM should be natively supported by the default CentOS kernel
+  - Need to get custom softwares in CNC repo for CentOS 6
+  - test:
+    - NetInstall physical server setup
+    - ISO physical server setup
+    - NetInstall VM server setup
+- Final test:
+  - run NetInstall CentOS 6
+  - Perform a full Web stack setup; PHP-FPM, Nginx, MySQL, Memcache, monitoring 
+  - validate all is working + perform test QA
+
+# Xen
+_Objective_; Replace the current Xen 3.3.1 Hypervisor to Xen 4.1.2
+_Advantages_; 
+
+- New features available,
+- Better performance and memory management,
+- Better support from the community, 3.3.1 is several years old and not mentioned much in tutorials anymore.
+
+_Drawbacks_;
+
+- CentOS 6 doesn't support Xen anymore and require custom build Linux kernel and Hypervisor
+
+_Solution_;
+
+- Use CentOS 5.8 for now; we rarely upgrade DomO and they usually are not publicly reachable, we don't need newer softwares as we would for the DomU
+
+_Steps_;
+
+- Search publicly available REPO that holds
+
+# CentOS6 DomO

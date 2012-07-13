@@ -56,10 +56,22 @@ Password:
 - chefpass or chef_pass ?
 
 ### Chef-server-webui
+This will only be used to prepare the configuration file of the Chef-server-webui, it does not create the user per-se on chef server (see next section).
+
+WebUI in fact is a client that can be ran locally or remotely and make use of the Chef's API
+
 Admin user: 
 
-- admin
+- admin / admin
 
-Admin pass (to change on the first login): 
+## Configure Chef CLI
+This step will configure and create users / certificate for the API / CLI / WebUI, etc.
 
-- admin 
+mkdir -p ~/.chef
+sudo cp /etc/chef/validation.pem /etc/chef/webui.pem ~/.chef
+sudo chown -R $USER ~/.chef
+
+knife configure -i
+
+REPLACE the default path provided by the path of the user .chef/ !
+

@@ -1,0 +1,51 @@
+js-devel (rpmforge - devel)
+libicu-devel-3.6-5.16.1.x86_64
+curl-devel.x86_64
+
+icu
+
+
+-- 
+GeoCouch install on fresh Ubuntu 12.04 
+
+cd /opt
+mkdir couchdb
+cd couchdb
+wget http://mirror.sdunix.com/apache/couchdb/releases/1.2.0/apache-couchdb-1.2.0.tar.gz
+tar xzvf apache-couchdb-1.2.0.tar.gz
+cd apache-couchdb-1.2.0
+./configure --prefix=/opt/couchdb/couchdb-1.2
+
+# Fix missing dependencies
+apt-get install gcc g++ make pkg-config libmozjs185-dev
+
+# install git
+apt-get install git
+
+# clone geocouch
+git clone https://github.com/couchbase/geocouch.git -b couchdb1.2.x
+
+# build geocouch plugin
+cd geocouch
+export COUCH_SRC='/opt/couchdb/apache-couchdb-1.2.0/src/couchdb/'
+make
+
+# Copy couchdb config to newly installed couchdb
+cp etc/couchdb/default.d/geocouch.ini /opt/couchdb/couchdb-1.2/etc/couchdb/default.d/
+cp share/www/script/test/* /opt/couchdb/couchdb-1.2/share/couchdb/www/script/test/.
+
+# Update the set of tests for couchdb
+echo '// geocouch tests, do these need to be sorted?
+loadTest("spatial.js");
+loadTest("list_spatial.js");
+loadTest("etags_spatial.js");
+loadTest("multiple_spatial_rows.js");
+loadTest("spatial_compaction.js");
+loadTest("spatial_design_docs.js");
+loadTest("spatial_bugfixes.js");
+loadTest("spatial_merging.js");
+loadTest("spatial_offsets.js");' >> /opt/couchdb/couchdb-1.2/share/couchdb/www/script/couch_tests.js
+
+# Set to init service and logrotate
+cp /opt/couchdb/couchdb-1.2/etc/init.d/couchdb /etc/init.d/.
+cp /opt/couchdb/couchdb-1.2/etc/logrotate.d/couchdb /etc/logrotate.d/.
