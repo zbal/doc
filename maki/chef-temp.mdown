@@ -1,0 +1,19 @@
+TODO Maki
+---------
+
+Requirements:
+
+
+- knife / chef installed on maki server
+- remote server FQDN need to be resolvable
+
+
+- How to prepare a server to be managed by Maki
+  - built through Cloud API (phase 2)
+  - use existing server 
+    - bootstrap via knife / API
+      - either via key or password
+- Prepare add service for server
+  - (phase1) get the basic cookbook ready
+  - (phase2) customize cookbook / data-bags to make things custom
+

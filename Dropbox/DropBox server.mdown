@@ -1,0 +1,141 @@
+# Setup DropBox on server
+
+## Install binaries
+
+cd ~ && wget -O - http://www.dropbox.com/download?plat=lnx.x86_64 | tar xzf -
+
+It creates a .dropbox-dist folder in your home dir. Move it to /usr/local/dropbox to make it available system wide
+
+mv ~/.dropbox-dist /usr/local/dropbox
+
+## Create init script
+
+In /etc/init.d/dropbox
+```
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          dropbox
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     false
+# Short-Description: dropbox service
+### END INIT INFO
+
+# dropbox service
+DROPBOX_USERS=""
+
+DAEMON=/usr/local/dropbox/dropbox
+
+start() {
+    echo "Starting dropbox..."
+    for dbuser in $DROPBOX_USERS; do
+        HOMEDIR=$(getent passwd $dbuser | cut -d: -f6)
+        if [ -x $DAEMON ]; then
+            HOME="$HOMEDIR" start-stop-daemon -b -o -c $dbuser -S -u $dbuser -x $DAEMON
+        fi
+    done
+}
+
+stop() {
+    echo "Stopping dropbox..."
+    for dbuser in $DROPBOX_USERS; do
+        HOMEDIR=$(getent passwd $dbuser | cut -d: -f6)
+        if [ -x $DAEMON ]; then
+            start-stop-daemon -o -c $dbuser -K -u $dbuser -x $DAEMON
+        fi
+    done
+}
+
+status() {
+    for dbuser in $DROPBOX_USERS; do
+        dbpid=$(pgrep -u $dbuser dropbox)
+        if [ -z $dbpid ] ; then
+            echo "dropboxd for USER $dbuser: not running."
+        else
+            echo "dropboxd for USER $dbuser: running (pid $dbpid)"
+        fi
+    done
+}
+
+case "$1" in
+
+    start)
+        start
+        ;;
+
+    stop)
+        stop
+        ;;
+
+    restart|reload|force-reload)
+        stop
+        start
+        ;;
+
+    status)
+        status
+        ;;
+
+    *)
+        echo "Usage: /etc/init.d/dropbox {start|stop|reload|force-reload|restart|status}"
+        exit 1
+
+esac
+
+exit 0
+```
+
+Edit DROPBOX_USERS="" to include all the users you will create after. There will be 1 Dropbox daemon per user running.
+
+## Create users
+
+mkdir /home/dropbox
+groupadd dropbox
+chgrp dropbox /home/dropbox
+
+useradd -m -d /home/dropbox/jellymon -s /bin/bash -g dropbox db_jellymon
+
+## First run
+
+The first run of Dropbox will require you to register the Dropbox account. You will need to run it manually so the configuration file of the dropbaox running user get created, etc.
+```
+sudo su - db_jellymon
+/usr/local/dropbox/dropboxd 
+```
+```
+This client is not linked to any account...
+Please visit https://www.dropbox.com/cli_link?host_id=7876a796c1fec9086b1498dd4d63eb98&cl=en_US to link this machine.
+```
+
+Create a new account, or use an existing one, then click on the link provided to synchronize the client.
+
+```
+Client successfully linked, Welcome Wcl!
+```
+
+## Start daemon
+Edit the init script to include the user you have included.
+
+```
+chmod +x /etc/init.d/dropbox
+update-rc.d dropbox defaults
+update-rc.d dropbox enable
+service dropbox start
+```
+
+
+# Sync dropbox folder to GitHub
+
+## Create SSH key for DB user to allow git commit / push
+
+ssh-keygen
+
+## Sync code
+
+cd ~
+mkdir Git
+cd Git
+git clone --branch gh-pages git@github.com/Wiredcraft/Jellymon.git

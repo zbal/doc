@@ -34,3 +34,17 @@ Cookbooks get the attributes, recipe for installation, etc.
 
 ## Build the 
 
+## Attach a node to the server
+This is made though the bootstrap process or during the instantiation of a server if started from Chef.
+
+knife bootstrap IP.address -x username -N client1.fqdn -r roles_to_apply -d template_distro -
+
+It will download many things from opscode / internet, perform the setup of the chef-client and create basic config on the client in /etc/chef
+
+accessing some of the config is made as root
+
+sudo knife role list -c /etc/chef/client.rb
+
+
+
+## Try fro
